@@ -1,13 +1,13 @@
 {
   "name": "teleinfo-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Teleinformation module to read frames from ErDF / Enedis main circuit breaker",
   "author": "Xavier Gouley <gxapplications@gmail.com> (asterism.tk)",
   "contributors": [],
   "license": "GPL-3.0-or-later",
   "scripts": {
     "test": "",
-    "start": "",
+    "start": "node example.js",
     "release": "npm run release:patch",
     "release:patch": "npm version patch -m \"Release new bugfix version %s\" && npm publish",
     "release:minor": "npm version minor -m \"Release new minor version %s\" && npm publish",
@@ -15,17 +15,18 @@
     "lint": "standard --verbose | snazzy",
     "preversion": "npm run lint && npm run test",
     "version": "npm run test",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "validate": "npm ls"
   },
   "main": "./teleinfo.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gxapplications/teleinformation"
+    "url": "https://github.com/gxapplications/teleinfo-js"
   },
   "bugs": {
-    "url": "https://github.com/gxapplications/teleinformation/issues"
+    "url": "https://github.com/gxapplications/teleinfo-js/issues"
   },
-  "homepage": "https://github.com/gxapplications/teleinformation",
+  "homepage": "https://github.com/gxapplications/teleinfo-js",
   "keywords": [
     "teleinfo",
     "teleinformation",
