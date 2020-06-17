@@ -1,0 +1,53 @@
+Ex Heures creuses :
+    {
+      ADCO: '811961261393',
+      OPTARIF: 'HC..',
+      ISOUSC: 45,
+      HCHC: 1667588,
+      HCHP: 1708105,
+      PTEC: 'HC..',
+      IINST: 13,
+      IMAX: 90,
+      PAPP: 3080,
+      HHPHC: 'A',
+      MOTDETAT: '000000'
+    }
+    {
+      ADCO: '811961261393',
+      OPTARIF: 'HC..',
+      ISOUSC: 45,
+      HCHC: 1667590,
+      HCHP: 1708105,
+      PTEC: 'HC..',
+      IINST: 13,
+      IMAX: 90,
+      PAPP: 3100,
+      HHPHC: 'A',
+      MOTDETAT: '000000'
+    }
+
+Ex Heures pleines :
+    {
+      ADCO: '811961261393',
+      OPTARIF: 'HC..',
+      ISOUSC: 45,
+      HCHC: 1665963,
+      HCHP: 1706783,
+      IINST: 4,
+      IMAX: 90,
+      PAPP: 1070,
+      HHPHC: 'A',
+      MOTDETAT: '000000'
+    }
+    {
+      ADCO: '811961261393',
+      OPTARIF: 'HC..',
+      ISOUSC: 45,
+      HCHC: 1665963,
+      HCHP: 1706784,
+      IINST: 4,
+      IMAX: 90,
+      PAPP: 1070,
+      HHPHC: 'A',
+      MOTDETAT: '000000'
+    }
