@@ -1,6 +1,6 @@
 {
   "name": "teleinfo-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Teleinformation module to read frames from ErDF / Enedis main circuit breaker",
   "author": "Xavier Gouley <gxapplications@gmail.com> (asterism.tk)",
   "contributors": [],
