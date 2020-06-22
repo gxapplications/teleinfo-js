@@ -9,13 +9,13 @@ const reduce = require('lodash.reduce')
 function compareObjects (a, b) {
   const diffs = reduce(a, function (acc, v, k) {
     if (!isEqual(v, b[k])) {
-      acc.k = { old: v, new: b[k] }
+      acc[k] = { old: v, new: b[k] }
     }
     return acc
   }, {})
   return reduce(b, function (acc, v, k) {
     if (!isEqual(v, a[k])) {
-      acc.k = { old: a[k], new: v }
+      acc[k] = { old: a[k], new: v }
     }
     return acc
   }, diffs)
@@ -59,7 +59,20 @@ function parseRaw (data, frame, frameEvents) {
   return false
 }
 
-function teleinfo (port) {
+function shouldTriggerChange (diff, inhibitors) {
+  for (const attr in diff) {
+    if (!['BASE', 'HCHC', 'HCHP', 'EJPH', 'BBRH', 'IINS', 'IMAX', 'PAPP', 'PMAX'].includes(attr)) {
+      return true // non inhibitable data, trigger it!
+    }
+    const inhibitor = inhibitors[attr]
+    if (!inhibitor || Math.abs(diff[attr].new - diff[attr].old) >= inhibitor) {
+      return true
+    }
+  }
+  return false
+}
+
+function teleinfo (port, inhibitors = { PAPP: 20 }) {
   const frameEvents = new events.EventEmitter()
   let isFirstFrame = true
   let lastFrame = {}
@@ -100,10 +113,12 @@ function teleinfo (port) {
       for (const attr in diff) {
         changes[attr] = diff[attr].new
       }
-      frameEvents.emit('change', { changes: changes, t: Date.now() })
-      frameEvents.emit('diff', { old: lastFrame, new: data, diff: diff, t: Date.now() })
+      if (shouldTriggerChange(diff, inhibitors)) {
+        frameEvents.emit('change', { changes: changes, t: Date.now() })
+        frameEvents.emit('diff', { old: lastFrame, new: data, diff: diff, t: Date.now() })
+        lastFrame = data
+      }
     }
-    lastFrame = data
   })
 
   return frameEvents
