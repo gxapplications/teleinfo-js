@@ -37,14 +37,14 @@ You should receive more than 1 frame per minute. If so, you can start to write y
 ```javascript
 const teleinfo = require('teleinfo')
 // use your own port here:
-const trameEvents = teleinfo('/dev/ttyUSB0')
+const emitter = teleinfo('/dev/ttyUSB0')
 
-trameEvents.on('rawFrame', function (data) {
+emitter.on('rawFrame', function (data) {
   console.log('rawFrame', data)
   // You will receive ALL raw data.
 })
 
-trameEvents.on('error', function (error) {
+emitter.on('error', function (error) {
   console.error(error)
   // In case of error from serialport module.
 })
@@ -53,16 +53,24 @@ trameEvents.on('error', function (error) {
 
 ## For better events and parsed data
 ```javascript
-trameEvents.on('frame', function (data) {
+emitter.on('connected', function (data) {
+  console.log('connected', data)
+  // When connection succeed and first data is received.
+})
+emitter.on('failure', function (data) {
+  console.log('failure', data)
+  // When connection cannot be established.
+})
+emitter.on('frame', function (data) {
   console.log('frame', data)
   // You will receive all parsed frames.
 })
-trameEvents.on('change', function (data) {
+emitter.on('change', function (data) {
   console.log('change', data.changes)
   // You will receive only changes.
 })
 
-trameEvents.on('diff', function (data) {
+emitter.on('diff', function (data) {
   console.log('diff', data.diff)
   // You will receive a full structured diff object for convenience.
 })
@@ -73,7 +81,7 @@ trameEvents.on('diff', function (data) {
 You can add inhibitors to your teleinfo instance. These will avoid too many change/diff events to be triggered.
 For example, to trigger events when `PAPP` value delta is above 30W, or `HCHP`/`HCHC` index delta are above 5Wh:
 ```javascript
-const trameEvents = teleinfo('/dev/ttyUSB0', { 'PAPP': 30, 'HCHP': 5, 'HCHC': 5 })
+const emitter = teleinfo('/dev/ttyUSB0', { 'PAPP': 30, 'HCHP': 5, 'HCHC': 5 })
 ```
 
 By default, inhibitors = `{ 'PAPP': 20 }`.

@@ -1,24 +1,32 @@
 const teleinfo = require('./teleinfo')
 const inhibitors = { PAPP: 20, HCHC: 5, HCHP: 5 }
-const trameEvents = teleinfo(process.argv[2] || '/dev/ttyUSB0', inhibitors)
+const emitter = teleinfo(process.argv[2] || '/dev/ttyUSB0', inhibitors)
 
-trameEvents.on('rawFrame', function (data) {
+emitter.on('connected', function () {
+  console.log('You are connected!')
+})
+
+emitter.on('failure', function (error) {
+  console.log('Cannot connect!', error)
+})
+
+emitter.on('rawFrame', function (data) {
   // console.log('rawFrame', data)
 })
 
-trameEvents.on('frame', function (data) {
+emitter.on('frame', function (data) {
   // console.log('frame', data)
   console.log('---')
 })
 
-trameEvents.on('change', function (data) {
+emitter.on('change', function (data) {
   console.log('change', data.changes)
 })
 
-trameEvents.on('diff', function (data) {
+emitter.on('diff', function (data) {
   console.log('diff', data.diff)
 })
 
-trameEvents.on('error', function (error) {
+emitter.on('error', function (error) {
   console.error(error)
 })

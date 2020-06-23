@@ -76,50 +76,57 @@ function teleinfo (port, inhibitors = { PAPP: 20 }) {
   const frameEvents = new events.EventEmitter()
   let isFirstFrame = true
   let lastFrame = {}
-  const serialPort = new Serialport(
-    port,
-    { baudRate: 1200, dataBits: 7, parity: 'even', stopBits: 1 }
-  )
-  const parser = new Readline({ delimiter: String.fromCharCode(13, 3, 2, 10) })
-  serialPort.pipe(parser)
+  try {
+    const serialPort = new Serialport(
+      port,
+      { baudRate: 1200, dataBits: 7, parity: 'even', stopBits: 1 }
+    )
+    const parser = new Readline({ delimiter: String.fromCharCode(13, 3, 2, 10) })
+    serialPort.pipe(parser)
 
-  parser.on('data', function (data) {
-    frameEvents.emit('rawFrame', data)
-    isFirstFrame = false
-  })
-
-  parser.on('error', function (err) {
-    frameEvents.emit('error', err)
-  })
-
-  frameEvents.on('rawFrame', function (data) {
-    const frame = {}
-    data.split('\r\n').forEach((d) => {
-      parseRaw(d, frame, frameEvents)
+    parser.on('data', function (data) {
+      frameEvents.emit('rawFrame', data)
+      if (isFirstFrame) {
+        frameEvents.emit('connected', data)
+        isFirstFrame = false
+      }
     })
 
-    // test if ADCO is present (first line of the frame)
-    if (frame.ADCO !== undefined) {
-      frameEvents.emit('frame', frame)
-    } else if (!isFirstFrame) { // avoid error to be thrown if first frame is not complete (just ignore it)
-      frameEvents.emit('error', new Error('Partial frame'))
-    }
-  })
+    parser.on('error', function (err) {
+      frameEvents.emit('error', err)
+    })
 
-  frameEvents.on('frame', function (data) {
-    const diff = compareObjects(lastFrame, data)
-    if (Object.keys(diff).length > 0) {
-      const changes = {}
-      for (const attr in diff) {
-        changes[attr] = diff[attr].new
+    frameEvents.on('rawFrame', function (data) {
+      const frame = {}
+      data.split('\r\n').forEach((d) => {
+        parseRaw(d, frame, frameEvents)
+      })
+
+      // test if ADCO is present (first line of the frame)
+      if (frame.ADCO !== undefined) {
+        frameEvents.emit('frame', frame)
+      } else if (!isFirstFrame) { // avoid error to be thrown if first frame is not complete (just ignore it)
+        frameEvents.emit('error', new Error('Partial frame'))
       }
-      if (shouldTriggerChange(diff, inhibitors)) {
-        frameEvents.emit('change', { changes: changes, t: Date.now() })
-        frameEvents.emit('diff', { old: lastFrame, new: data, diff: diff, t: Date.now() })
-        lastFrame = data
+    })
+
+    frameEvents.on('frame', function (data) {
+      const diff = compareObjects(lastFrame, data)
+      if (Object.keys(diff).length > 0) {
+        const changes = {}
+        for (const attr in diff) {
+          changes[attr] = diff[attr].new
+        }
+        if (shouldTriggerChange(diff, inhibitors)) {
+          frameEvents.emit('change', { changes: changes, t: Date.now() })
+          frameEvents.emit('diff', { old: lastFrame, new: data, diff: diff, t: Date.now() })
+          lastFrame = data
+        }
       }
-    }
-  })
+    })
+  } catch (error) {
+    frameEvents.emit('failure', error)
+  }
 
   return frameEvents
 }
