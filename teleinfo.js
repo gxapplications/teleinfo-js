@@ -53,15 +53,13 @@ function parseRaw (data, frame, frameEvents) {
       const error = new Error('Checksum error: \n' + data + '\nComputed/Receive: ' + sum + '/' + data.charCodeAt(j + 1))
       frameEvents.emit('error', error)
     }
-  } else {
-    // TODO :0! what to do ? error ?
   }
   return false
 }
 
 function shouldTriggerChange (diff, inhibitors) {
   for (const attr in diff) {
-    if (!['BASE', 'HCHC', 'HCHP', 'EJPH', 'BBRH', 'IINS', 'IMAX', 'PAPP', 'PMAX'].includes(attr)) {
+    if (!['BASE', 'HCHC', 'HCHP', 'EJPH', 'BBRH', 'IINS', 'IMAX', 'PAPP', 'PMAX'].includes(attr.substr(0, 4))) {
       return true // non inhibitable data, trigger it!
     }
     const inhibitor = inhibitors[attr]
